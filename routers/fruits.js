@@ -1,79 +1,78 @@
-const express = require('express');
+
+const express = require("express");
+const { body, check, validationResult } = require("express-validator");
 const router = express.Router();
-const fruits = require('../data/fruits');
-const validator = require('express-validator');
-const { check } = require('express-validator');
-
-
-
-
+// List of Fruits
 let fruits = [
-    {
-        name: "Apple",
-        color: "Red"
-    },
-    {
-        name: "Banana",
-        color: "Yellow"
-    },
-    {
-        name: "Kiwi",
-        color: "Green"
-    },
-    {
-        name: "Grape",
-        color: "Purple"
-    },
-]
+  {
+    name: "Apple",
+    color: "Red",
+  },
+  {
+    name: "Banana",
+    color: "Yellow",
+  },
+  {
+    name: "Kiwi",
+    color: "Green",
+  },
+  {
+    name: "Grape",
+    color: "Purple",
+  },
+];
+
+router.get("/", (req, res) => {
+  res.json(fruits);
+});
+
+router.get("/:id", (req, res) => {
+  const fruit = fruits[req.params.id - 1];
+  res.json(fruit);
+});
 
 router.use(express.json());
-router.post(
-  "/",
-  [
-    check("name").trim().not().isEmpty(),
-    check("color").trim().not().isEmpty(),
-    check("name").isLength({ min: 10, max: 75 }), 
-    // My name has more than 30 characters.
-    check("color").isLength({ min: 10, max: 75 })
-  ],
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    // If the validationResults returns any errors, then trigger a response
-    if (!errors.isEmpty()) {
-      res.json({ error: errors.array() });
+// check that the color field in the body of the post request is not empty and does have not spaces
+router.post("/", [check("color").trim().not().isEmpty()], (req, res) => {
+  // Check the request object passes the check defined above
+  const errors = validationResult(req);
+  // If the validationResults returns any errors, then trigger a response
+  if (!errors.isEmpty()) {
+    res.json({ error: errors.array() });
+  } else {
+    // If data is valid, push it into the fruits array
+
+    const fruit = { name: req.body.name, color: req.body.color };
+    fruits.push(fruit);
+    res.json(fruits);
+  }
+});
+
+router.use(express.json());
+router.put("/:id", (req, res) => {
+  let index = Number(req.params.id);
+  let fruit = [];
+  let newEntry = { name: req.body.name, color: req.body.color };
+  for (let i = 0; i < fruits.length; i++) {
+    if (i === index) {
+      [];
+      fruit.push(newEntry);
     } else {
-      // If data is valid, push it into the users array
-      const { name, color} = req.body;
-      if ((name, color)) {
-        await fruits.create({
-          name: name,
-          color: color,
-        });
-      }
-      res.json(201);
+      fruit.push(fruits[i]);
     }
   }
-);
-
-
-    router.use(express.json()); 
-    router.put("/:id", async (req, res, next) => {
-const fruits = await fruits.findByPk(req.params.id);
-       user.update({
-        name: req.body.name,
-        color: req.body.color,
-        });
-        res.json("Put Successful!");
-      });
-
+  fruits = fruit;
+  res.json(fruits);
+});
 
 router.use(express.json());
-router.delete("/:id", async (req, res, next) => {
-const fruits = await fruits.findByPk(req.params.id);
-   user.destroy();
-    res.json("User deleted");
-}
-);
+router.delete("/:id", (req, res) => {
+  fruits.splice(req.params.id, 1);
+  res.json(fruits);
+});
+
+
+
 
 
 module.exports = router;
