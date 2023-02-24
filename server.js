@@ -1,9 +1,13 @@
 const express = require("express")
 const app = express()
 const port = 3000
+const usersRouter = require("./routes/users")
+const fruitsRouter = require("./routes/fruits")
+const validator = require("express-validator")
+
 
 // List of Users
-let users = [
+/*let users = [
     {
         name: "User 1",
         age: 30
@@ -40,7 +44,7 @@ let fruits = [
         name: "Grape",
         color: "Purple"
     },
-]
+] */
 
 // Express Routes
 
